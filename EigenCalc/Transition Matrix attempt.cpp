@@ -1,11 +1,15 @@
 #include <iostream>
 #include <Eigen/Dense>
 
+#include <vector>
+#include <iterator>
+#include <Eigen/Eigenvalues>
+
 using namespace std;
 using namespace Eigen;
 
 
- void InitTransMatrix(Matrix <double, 6, 6> (&arr), double Ps, double Pe, double Pi, double Pr, double Pv)
+void InitTransMatrix(Matrix <double, 6, 6> (&arr), double Ps, double Pe, double Pi, double Pr, double Pv)
     {
         arr(0, 0) = Ps;
         arr(1, 0) = 1 - Ps;
@@ -63,7 +67,7 @@ using namespace Eigen;
 
     }
 
- void IterateStepSEIR(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
+void IterateStepSEIR(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
     {
 
         double Vec[4] = {arr2[0], arr2[1], arr2[2], arr2[3]};
@@ -158,7 +162,7 @@ void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
 
     }
 
- void InitRef(Matrix <double, 6, 6> (&arr1), Matrix <double, 6, 6> (&arr3))
+void InitRef(Matrix <double, 6, 6> (&arr1), Matrix <double, 6, 6> (&arr3))
     {
         for(int i = 0; i < 6; i++)
     {
@@ -169,11 +173,75 @@ void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
     }
     }
 
+void InitRef_matSEIR(Matrix <double, 6, 6> (&arr1), MatrixXd (&ref_mat))
+    {
+        ref_mat.resize(4, 4);
 
+        for(int i = 0; i < 4; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            ref_mat(i, j) = arr1(i, j);
+        }
+    }
+    }
+
+void InitRef_matSEIRIm(Matrix <double, 6, 6> (&arr1), MatrixXd (&ref_mat))
+    {
+
+        ref_mat = arr1;
+        ref_mat.resize(5, 5);
+
+        int l = 0;
+
+        for(int i = 0; i < 6; i++)
+        {
+
+            if(i != 4)
+            {
+
+                int k = 0;
+
+                for(int j = 0; j < 6; j++)
+                {
+                    if(j != 4)
+                    {
+                        arr1(i, j) = ref_mat(i - l, j - k);
+                    }
+                    else
+                    {
+                        k += 1;
+                    }
+
+                }
+            }
+            else
+            {
+                l += 1;
+            }
+
+        }
+    
+    }
+
+
+void InitRef_matSEIRVIm(Matrix <double, 6, 6> (&arr1), MatrixXd (&ref_mat))
+    {
+
+        ref_mat.resize(6, 6);
+
+        for(int i = 0; i < 4; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            ref_mat(i, j) = arr1(i, j);
+        }
+    }
+    }
 
 
 int main(){
-    
+
     Matrix <double, 6, 6> transmatrix;
     Matrix <double, 6, 6> reftransmatrix;
 
@@ -220,6 +288,10 @@ int main(){
 
     int exitcon = 1;
 
+    MatrixXcd eigenvalueMatrix;
+    MatrixXcd eigenvectorMatrix;
+    MatrixXd ref_mat(6, 6);
+
     while(exitcon != 0)
     {
 
@@ -230,77 +302,143 @@ int main(){
             RefVec[i] = InitialVec[i];
         }
 
-        cout << "What would you like to do?\n0: End Program\n1: Iterate SEIR model\n2: Iterate SIERIm model\n3: Iterate SEIRVIm model\n4: Find Eigenvalues and Eigenvectors for Porbability Matrix\n";
+        cout << "What would you like to do?\n0: End Program\n 1: Iterate SEIR model\n 2: Iterate SIERIm model\n 3: Iterate SEIRVIm model\n 4: Find Eigenvalues and Eigenvectors for Porbability Matrix\n";
         cin >> exitcon;
 
         switch(exitcon)
         {
+            
+
             case 0:
             break;
 
             case 1:
 
-            cout << "How many iterations do you want to calculate?" << endl;
-            cin >> iterations;
+                cout << "How many iterations do you want to calculate?" << endl;
+                cin >> iterations;
 
-            for(int i = 0; i < iterations; i++)
-            {
-                IterateStepSEIR(reftransmatrix, RefVec);
-            }
+                for(int i = 0; i < iterations; i++)
+                {
+                    IterateStepSEIR(reftransmatrix, RefVec);
+                }
 
-            cout << "Your vector is " << endl;
+                cout << "Your vector is " << endl;
 
-            for(int i = 0; i < 4; i++)
-            {
-                cout << RefVec[i] << endl;
-            }
-            cin >> exitcon;
+                for(int i = 0; i < 4; i++)
+                {
+                    cout << RefVec[i] << endl;
+                }
+                cin >> exitcon;
             break;
 
             case 2:
 
-            cout << "How many iterations do you want to calculate?" << endl;
-            cin >> iterations;
-            
-            reftransmatrix(5, 3) = reftransmatrix(0, 3) / 2;
-            reftransmatrix(0, 3) *= 0.5;
+                cout << "How many iterations do you want to calculate?" << endl;
+                cin >> iterations;
+                
+                reftransmatrix(5, 3) = reftransmatrix(0, 3) / 2;
+                reftransmatrix(0, 3) *= 0.5;
 
-            for(int i = 0; i < iterations; i++)
-            {
-                IterateStepSEIRIm(reftransmatrix, RefVec);
-            }
+                for(int i = 0; i < iterations; i++)
+                {
+                    IterateStepSEIRIm(reftransmatrix, RefVec);
+                }
 
-            for(int i = 0; i < 6; i++)
-            {
-                cout << RefVec[i] << endl;
-            }
-            cin >> exitcon;
+                for(int i = 0; i < 6; i++)
+                {
+                    cout << RefVec[i] << endl;
+                }
+                cin >> exitcon;
+
             break;
 
             case 3:
             
-            cout << "How many iterations do you want to calculate?" << endl;
-            cin >> iterations;
+                cout << "How many iterations do you want to calculate?" << endl;
+                cin >> iterations;
 
-            for(int i = 0; i < iterations; i++)
-            {
-                IterateStepSEIRVIm(reftransmatrix, RefVec);
-            }
+                for(int i = 0; i < iterations; i++)
+                {
+                    IterateStepSEIRVIm(reftransmatrix, RefVec);
+                }
 
-            for(int i = 0; i < 6; i++)
-            {
-                cout << RefVec[i] << endl;
-            }
-            cin >> exitcon;
+                for(int i = 0; i < 6; i++)
+                {
+                    cout << RefVec[i] << endl;
+                }
+                cin >> exitcon;
+
             break;
+
+            case 4:
+
+            int l;
+            cout << "Which model are you finding the eigenvectors and/or eigenvalues for?\n 1. SEIR\n 2. SEIRIm\n 3. SEIRVIm\n";
+            cin >> l;
+            switch(l)
+            {
+                case 1:
+                {
+
+                    InitRef_matSEIR(reftransmatrix, ref_mat);
+
+                    EigenSolver<MatrixXd> eigenValueSolver(ref_mat);
+
+                    eigenvalueMatrix = eigenValueSolver.eigenvalues();
+                    eigenvectorMatrix = eigenValueSolver.eigenvectors();
+
+                    cout << "\nComputed Eigenvalues:\n\n" << eigenvalueMatrix << endl;
+                    cout << "\nComputed EigenVectors\n\n" << eigenvectorMatrix << endl;
+
+                    cin >> exitcon;
+                }
+                break;
+
+                case 2:
+                {
+
+                    InitRef_matSEIRIm(reftransmatrix, ref_mat);
+
+                    EigenSolver<MatrixXd> eigenValueSolver(ref_mat);
+
+                    eigenvalueMatrix = eigenValueSolver.eigenvalues();
+                    eigenvectorMatrix = eigenValueSolver.eigenvectors();
+
+                    cout << "Computed Eigenvalues:\n" << eigenvalueMatrix << endl;
+                    cout << "\nComputed EigenVectors\n" << eigenvectorMatrix << endl;
+
+                    cin >> exitcon;
+                }
+
+                break;
+
+                case 3:
+
+                {
+
+                    InitRef_matSEIRVIm(reftransmatrix, ref_mat);
+
+                    EigenSolver<MatrixXd> eigenValueSolver(ref_mat);
+
+                    eigenvalueMatrix = eigenValueSolver.eigenvalues();
+                    eigenvectorMatrix = eigenValueSolver.eigenvectors();
+
+                    cout << "Computed Eigenvalues:\n" << eigenvalueMatrix << endl;
+                    cout << "\nComputed EigenVectors\n" << eigenvectorMatrix << endl;
+
+                    cin >> exitcon;
+                }
+                
+                break;
+
+                
+            }
+
             
 
         }
     }
 
-   
-
-   
 
     return 0;
 }
