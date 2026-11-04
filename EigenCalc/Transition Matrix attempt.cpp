@@ -63,7 +63,7 @@ using namespace Eigen;
 
     }
 
- void IterateStepSEIR(Matrix <double, 6, 6> (&arr1), double (&arr2)[5])
+ void IterateStepSEIR(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
     {
 
         double Vec[4] = {arr2[0], arr2[1], arr2[2], arr2[3]};
@@ -92,41 +92,47 @@ using namespace Eigen;
 
     }
 
-void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[5])
+void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
     {
 
-        double Vec[4] = {arr2[0], arr2[1], arr2[2], arr2[3]};
+        double Vec[5] = {arr2[0], arr2[1], arr2[2], arr2[3], 0, arr[5]};
 
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 6; i++)
         {
 
             double sum = 0.0;
-
-            for(int j = 0; j < 5; j++)
+            if(i != 4)
             {
-                sum += arr1(i, j) * Vec[j];
+                for(int j = 0; j < 6; j++)
+                {
+                    if(j != 4)
+                    {
+                        sum += arr1(i, j) * Vec[j];
+                    }
 
+                }
             }
 
             arr2[i] = sum;
 
         }
 
-        double normal_sum = arr2[0] + arr2[1] + arr2[2] + arr2[3];
+        double normal_sum = arr2[0] + arr2[1] + arr2[2] + arr2[3] + arr2[5];
 
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < 6; i++)
         {
+            if(i != 4)
             arr2[i] /= normal_sum;
         }
 
     }
 
-void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[5])
+void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
     {
 
         double Vec[4] = {arr2[0], arr2[1], arr2[2], arr2[3]};
 
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 6; i++)
         {
 
             double sum = 0.0;
@@ -168,10 +174,8 @@ int main(){
     Matrix <double, 6, 6> transmatrix;
     Matrix <double, 6, 6> reftransmatrix;
 
-    double InitialVec[5];
-    double RefVec[5];
-
-    InitialVec[4] = RefVec[4] = 0;
+    double InitialVec[6];
+    double RefVec[6];
 
     double Ps, Pe, Pi, Pr, Pv;
 
@@ -204,6 +208,12 @@ int main(){
     cout << "What is the Initial R value?" << endl;
     cin >> InitialVec[3];
     RefVec[3] = InitialVec[3];
+    cout << "What is the Initial V value?" << endl;
+    cin >> InitialVec[4];
+    RefVec[4] = InitialVec[4];
+    cout << "What is the Initial Im value?" << endl;
+    cin >> InitialVec[5];
+    RefVec[5] = InitialVec[5];
 
     int exitcon = 1;
 
