@@ -38,10 +38,14 @@ void InitTransMatrix(Matrix <double, 6, 6> (&arr), double Ps, double Pe, double 
         }
         arr(3, 3) = Pr;
 
-        for(int n = 0; n < 3; n++)
+        for(int n = 0; n < 4; n++)
         {
             arr(4, n) = 0;
         }
+
+        //change to make it so arr(4, 3) is set equal to 1 - (Pr/2) along with arr(0, 3))
+        
+        arr(5, 3) = 0, arr(0, 3) = 1 - Pr;
 
         for(int n = 0; n < 4; n++)
         {
@@ -328,7 +332,9 @@ int main(){
                 {
                     cout << RefVec[i] << endl;
                 }
+                cout << endl;
                 cin >> exitcon;
+
             break;
 
             case 2:
@@ -348,6 +354,7 @@ int main(){
                 {
                     cout << RefVec[i] << endl;
                 }
+                cout << endl;
                 cin >> exitcon;
 
             break;
@@ -366,6 +373,7 @@ int main(){
                 {
                     cout << RefVec[i] << endl;
                 }
+                cout << endl;
                 cin >> exitcon;
 
             break;
@@ -389,6 +397,7 @@ int main(){
 
                     cout << "\nComputed Eigenvalues:\n\n" << eigenvalueMatrix << endl;
                     cout << "\nComputed EigenVectors\n\n" << eigenvectorMatrix << endl;
+                    cout << endl;
 
                     cin >> exitcon;
                 }
@@ -406,6 +415,7 @@ int main(){
 
                     cout << "Computed Eigenvalues:\n" << eigenvalueMatrix << endl;
                     cout << "\nComputed EigenVectors\n" << eigenvectorMatrix << endl;
+                    cout << endl;
 
                     cin >> exitcon;
                 }
@@ -425,13 +435,14 @@ int main(){
 
                     cout << "Computed Eigenvalues:\n" << eigenvalueMatrix << endl;
                     cout << "\nComputed EigenVectors\n" << eigenvectorMatrix << endl;
+                    cout << endl;
 
                     cin >> exitcon;
                 }
                 
                 break;
 
-                
+                // normalize eigen vectors 
             }
 
             
