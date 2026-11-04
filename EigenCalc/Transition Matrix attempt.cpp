@@ -90,12 +90,14 @@ using namespace Eigen;
             arr2[i] /= normal_sum;
         }
 
+        arr2[4] = 0, arr2[5] = 0;
+
     }
 
 void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
     {
 
-        double Vec[5] = {arr2[0], arr2[1], arr2[2], arr2[3], 0, arr[5]};
+        double Vec[6] = {arr2[0], arr2[1], arr2[2], arr2[3], 0, arr2[5]};
 
         for(int i = 0; i < 6; i++)
         {
@@ -130,14 +132,14 @@ void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
 void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
     {
 
-        double Vec[4] = {arr2[0], arr2[1], arr2[2], arr2[3]};
+        double Vec[6] = {arr2[0], arr2[1], arr2[2], arr2[3], arr2[4], arr2[5]};
 
         for(int i = 0; i < 6; i++)
         {
 
             double sum = 0.0;
 
-            for(int j = 0; j < 5; j++)
+            for(int j = 0; j < 6; j++)
             {
                 sum += arr1(i, j) * Vec[j];
 
@@ -147,9 +149,9 @@ void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
 
         }
 
-        double normal_sum = arr2[0] + arr2[1] + arr2[2] + arr2[3];
+        double normal_sum = arr2[0] + arr2[1] + arr2[2] + arr2[3] + arr2[4] + arr2[5];
 
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < 6; i++)
         {
             arr2[i] /= normal_sum;
         }
@@ -158,9 +160,9 @@ void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
 
  void InitRef(Matrix <double, 6, 6> (&arr1), Matrix <double, 6, 6> (&arr3))
     {
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < 6; i++)
     {
-        for(int j = 0; j < 5; j++)
+        for(int j = 0; j < 6; j++)
         {
             arr3(i, j) = arr1(i, j);
         }
@@ -171,6 +173,7 @@ void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
 
 
 int main(){
+    
     Matrix <double, 6, 6> transmatrix;
     Matrix <double, 6, 6> reftransmatrix;
 
@@ -219,7 +222,15 @@ int main(){
 
     while(exitcon != 0)
     {
-        cout << "What would you like to do?\n0: End Program\n1: Iterate SEIR model\n2: Iterate SIERim model\n3: Find Eigenvalues and Eigenvectors for Porbability Matrix\n";
+
+        InitRef(transmatrix, reftransmatrix);
+
+        for(int i = 0; i < 6; i++)
+        {
+            RefVec[i] = InitialVec[i];
+        }
+
+        cout << "What would you like to do?\n0: End Program\n1: Iterate SEIR model\n2: Iterate SIERIm model\n3: Iterate SEIRVIm model\n4: Find Eigenvalues and Eigenvectors for Porbability Matrix\n";
         cin >> exitcon;
 
         switch(exitcon)
@@ -228,6 +239,9 @@ int main(){
             break;
 
             case 1:
+
+            cout << "How many iterations do you want to calculate?" << endl;
+            cin >> iterations;
 
             for(int i = 0; i < iterations; i++)
             {
@@ -240,16 +254,51 @@ int main(){
             {
                 cout << RefVec[i] << endl;
             }
+            cin >> exitcon;
             break;
 
             case 2:
 
+            cout << "How many iterations do you want to calculate?" << endl;
+            cin >> iterations;
+            
+            reftransmatrix(5, 3) = reftransmatrix(0, 3) / 2;
+            reftransmatrix(0, 3) *= 0.5;
+
+            for(int i = 0; i < iterations; i++)
+            {
+                IterateStepSEIRIm(reftransmatrix, RefVec);
+            }
+
+            for(int i = 0; i < 6; i++)
+            {
+                cout << RefVec[i] << endl;
+            }
+            cin >> exitcon;
+            break;
+
+            case 3:
+            
+            cout << "How many iterations do you want to calculate?" << endl;
+            cin >> iterations;
+
+            for(int i = 0; i < iterations; i++)
+            {
+                IterateStepSEIRVIm(reftransmatrix, RefVec);
+            }
+
+            for(int i = 0; i < 6; i++)
+            {
+                cout << RefVec[i] << endl;
+            }
+            cin >> exitcon;
+            break;
+            
 
         }
     }
 
-    cout << "How many iterations do you want to calculate?" << endl;
-    cin >> iterations;
+   
 
    
 
