@@ -406,6 +406,9 @@ int main(){
                 case 2:
                 {
 
+                    reftransmatrix(5, 3) = reftransmatrix(0, 3) / 2;
+                    reftransmatrix(0, 3) *= 0.5;
+
                     InitRef_matSEIRIm(reftransmatrix, ref_mat);
 
                     EigenSolver<MatrixXd> eigenValueSolver(ref_mat);
