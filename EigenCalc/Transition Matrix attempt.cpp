@@ -1,0 +1,247 @@
+#include <iostream>
+#include <Eigen/Dense>
+
+using namespace std;
+using namespace Eigen;
+
+
+ void InitTransMatrix(Matrix <double, 6, 6> (&arr), double Ps, double Pe, double Pi, double Pr, double Pv)
+    {
+        arr(0, 0) = Ps;
+        arr(1, 0) = 1 - Ps;
+        for(int n = 0;n < 2; n++)
+        {
+            arr(n+2, 0) = 0;
+        }
+
+        arr(0, 1) = Pe;
+        arr(1, 1) = 0;
+        for(int n = 0;n < 2; n++)
+        {
+            arr(n+2, 1) = (1-Pe)/2;
+        }
+
+        for(int n = 0;n < 3; n++)
+        {
+            arr(n, 2) = 0;
+        }
+        arr(3, 2) = Pi;
+
+        arr(0, 3) = 1 - Pr;
+        for(int n = 0;n < 2; n++)
+        {
+            arr(n+1, 3) = 0;
+        }
+        arr(3, 3) = Pr;
+
+        for(int n = 0; n < 3; n++)
+        {
+            arr(4, n) = 0;
+        }
+
+        for(int n = 0; n < 4; n++)
+        {
+            arr(n, 4) = 0;
+        }
+
+        arr(4, 4) = Pv;
+
+
+        for(int n = 0; n < 4; n++)
+        {
+            arr(5, n) = 0;
+        }
+
+        arr(5, 4) = 1 - Pv;
+
+        for(int n = 0; n < 5; n++)
+        {
+            arr(n, 5) = 0;
+        }
+
+        arr(5, 5) = 1;        
+
+    }
+
+ void IterateStepSEIR(Matrix <double, 6, 6> (&arr1), double (&arr2)[5])
+    {
+
+        double Vec[4] = {arr2[0], arr2[1], arr2[2], arr2[3]};
+
+        for(int i = 0; i < 4; i++)
+        {
+
+            double sum = 0.0;
+
+            for(int j = 0; j < 4; j++)
+            {
+                sum += arr1(i, j) * Vec[j];
+
+            }
+
+            arr2[i] = sum;
+
+        }
+
+        double normal_sum = arr2[0] + arr2[1] + arr2[2] + arr2[3];
+
+        for(int i = 0; i < 4; i++)
+        {
+            arr2[i] /= normal_sum;
+        }
+
+    }
+
+void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[5])
+    {
+
+        double Vec[4] = {arr2[0], arr2[1], arr2[2], arr2[3]};
+
+        for(int i = 0; i < 5; i++)
+        {
+
+            double sum = 0.0;
+
+            for(int j = 0; j < 5; j++)
+            {
+                sum += arr1(i, j) * Vec[j];
+
+            }
+
+            arr2[i] = sum;
+
+        }
+
+        double normal_sum = arr2[0] + arr2[1] + arr2[2] + arr2[3];
+
+        for(int i = 0; i < 4; i++)
+        {
+            arr2[i] /= normal_sum;
+        }
+
+    }
+
+void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[5])
+    {
+
+        double Vec[4] = {arr2[0], arr2[1], arr2[2], arr2[3]};
+
+        for(int i = 0; i < 5; i++)
+        {
+
+            double sum = 0.0;
+
+            for(int j = 0; j < 5; j++)
+            {
+                sum += arr1(i, j) * Vec[j];
+
+            }
+
+            arr2[i] = sum;
+
+        }
+
+        double normal_sum = arr2[0] + arr2[1] + arr2[2] + arr2[3];
+
+        for(int i = 0; i < 4; i++)
+        {
+            arr2[i] /= normal_sum;
+        }
+
+    }
+
+ void InitRef(Matrix <double, 6, 6> (&arr1), Matrix <double, 6, 6> (&arr3))
+    {
+        for(int i = 0; i < 5; i++)
+    {
+        for(int j = 0; j < 5; j++)
+        {
+            arr3(i, j) = arr1(i, j);
+        }
+    }
+    }
+
+
+
+
+int main(){
+    Matrix <double, 6, 6> transmatrix;
+    Matrix <double, 6, 6> reftransmatrix;
+
+    double InitialVec[5];
+    double RefVec[5];
+
+    InitialVec[4] = RefVec[4] = 0;
+
+    double Ps, Pe, Pi, Pr, Pv;
+
+    int iterations;
+
+    
+    cout << "What is Ps?" << endl;
+    cin >> Ps;
+    cout << "What is Pe?" << endl;
+    cin >> Pe;
+    cout << "What is Pi?" << endl;
+    cin >> Pi;
+    cout << "What is Pr?" << endl;
+    cin >> Pr;
+    cout << "What is Pv?" << endl;
+    cin >> Pv;
+
+    InitTransMatrix(transmatrix, Ps, Pe, Pi, Pr, Pv);
+    InitRef(transmatrix, reftransmatrix);
+
+    cout << "What is the Initial S value?" << endl;
+    cin >> InitialVec[0];
+    RefVec[0] = InitialVec[0];
+    cout << "What is the Initial E value?" << endl;
+    cin >> InitialVec[1];
+    RefVec[1] = InitialVec[1];
+    cout << "What is the Initial I value?" << endl;
+    cin >> InitialVec[2];
+    RefVec[2] = InitialVec[2];
+    cout << "What is the Initial R value?" << endl;
+    cin >> InitialVec[3];
+    RefVec[3] = InitialVec[3];
+
+    int exitcon = 1;
+
+    while(exitcon != 0)
+    {
+        cout << "What would you like to do?\n0: End Program\n1: Iterate SEIR model\n2: Iterate SIERim model\n3: Find Eigenvalues and Eigenvectors for Porbability Matrix\n";
+        cin >> exitcon;
+
+        switch(exitcon)
+        {
+            case 0:
+            break;
+
+            case 1:
+
+            for(int i = 0; i < iterations; i++)
+            {
+                IterateStepSEIR(reftransmatrix, RefVec);
+            }
+
+            cout << "Your vector is " << endl;
+
+            for(int i = 0; i < 4; i++)
+            {
+                cout << RefVec[i] << endl;
+            }
+            break;
+
+            case 2:
+
+
+        }
+    }
+
+    cout << "How many iterations do you want to calculate?" << endl;
+    cin >> iterations;
+
+   
+
+    return 0;
+}
