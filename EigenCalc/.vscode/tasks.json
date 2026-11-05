@@ -11,7 +11,9 @@
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "-I",
-                "C:/toolbox/eigen-5.0.1/"
+                "C:/toolbox/eigen-5.0.1/",
+                "-I",
+                "C:/toolbox/pbPlots/"
             ],
             "options": {
                 "cwd": "${fileDirname}"

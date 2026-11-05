@@ -4,12 +4,13 @@
 #include <vector>
 #include <iterator>
 #include <Eigen/Eigenvalues>
+#include "pbPlots.hpp"
 
 using namespace std;
 using namespace Eigen;
 
 
-void InitTransMatrix(Matrix <double, 6, 6> (&arr), double Ps, double Pe, double Pi, double Pr, double Pv)
+void InitTransMatrix(Matrix<double, 6, 6> (&arr), double Ps, double Pe, double Pi, double Pr, double Pv)
     {
         arr(0, 0) = Ps;
         arr(1, 0) = 1 - Ps;
@@ -71,7 +72,7 @@ void InitTransMatrix(Matrix <double, 6, 6> (&arr), double Ps, double Pe, double 
 
     }
 
-void IterateStepSEIR(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
+void IterateStepSEIR(Matrix<double, 6, 6> (&arr1), double (&arr2)[6], int iterations, vector<double> (&x), vector<double> (&y1), vector<double> (&y2), vector<double> (&y3), vector<double> (&y4), vector<double> (&y5), vector<double> (&y6))
     {
 
         double Vec[4] = {arr2[0], arr2[1], arr2[2], arr2[3]};
@@ -96,13 +97,22 @@ void IterateStepSEIR(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
         for(int i = 0; i < 4; i++)
         {
             arr2[i] /= normal_sum;
+
         }
 
         arr2[4] = 0, arr2[5] = 0;
 
+        x[iterations] = iterations + 1;
+        y1[iterations] = arr2[0];
+        y2[iterations] = arr2[1];
+        y3[iterations] = arr2[3];
+        y4[iterations] = arr2[4];
+        y5[iterations] = arr2[5];
+        y6[iterations] = arr2[6];
+
     }
 
-void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
+void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6], int iterations, vector<double> (&x), vector<double> (&y1), vector<double> (&y2), vector<double> (&y3), vector<double> (&y4), vector<double> (&y5), vector<double> (&y6))
     {
 
         double Vec[6] = {arr2[0], arr2[1], arr2[2], arr2[3], 0, arr2[5]};
@@ -135,9 +145,17 @@ void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
             arr2[i] /= normal_sum;
         }
 
+        x[iterations] = iterations + 1;
+        y1[iterations] = arr2[0];
+        y2[iterations] = arr2[1];
+        y3[iterations] = arr2[3];
+        y4[iterations] = arr2[4];
+        y5[iterations] = arr2[5];
+        y6[iterations] = arr2[6];
+
     }
 
-void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
+void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6], int iterations, vector<double> (&x), vector<double> (&y1), vector<double> (&y2), vector<double> (&y3), vector<double> (&y4), vector<double> (&y5), vector<double> (&y6))
     {
 
         double Vec[6] = {arr2[0], arr2[1], arr2[2], arr2[3], arr2[4], arr2[5]};
@@ -163,6 +181,14 @@ void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6])
         {
             arr2[i] /= normal_sum;
         }
+
+        x[iterations] = iterations + 1;
+        y1[iterations] = arr2[0];
+        y2[iterations] = arr2[1];
+        y3[iterations] = arr2[3];
+        y4[iterations] = arr2[4];
+        y5[iterations] = arr2[5];
+        y6[iterations] = arr2[6];
 
     }
 
@@ -196,33 +222,19 @@ void InitRef_matSEIRIm(Matrix <double, 6, 6> (&arr1), MatrixXd (&ref_mat))
         ref_mat = arr1;
         ref_mat.resize(5, 5);
 
-        int l = 0;
-
-        for(int i = 0; i < 6; i++)
+        for(int i = 0; i < 5; i++)
         {
 
-            if(i != 4)
-            {
+            int remove4[5] = {0, 1, 2, 3, 5};
 
-                int k = 0;
-
-                for(int j = 0; j < 6; j++)
+                for(int j = 0; j < 5; j++)
                 {
-                    if(j != 4)
-                    {
-                        arr1(i, j) = ref_mat(i - l, j - k);
-                    }
-                    else
-                    {
-                        k += 1;
-                    }
+                    
+                        arr1(i, j) = ref_mat(remove4[i], remove4[j]);
+                    
+                   
 
                 }
-            }
-            else
-            {
-                l += 1;
-            }
 
         }
     
@@ -296,6 +308,71 @@ int main(){
     MatrixXcd eigenvectorMatrix;
     MatrixXd ref_mat(6, 6);
 
+    vector<double> xall;
+    vector<double> y1;
+    vector<double> y2;
+    vector<double> y3;
+    vector<double> y4;
+    vector<double> y5;
+    vector<double> y6;
+
+    ScatterPlotSeries *susc = GetDefaultScatterPlotSeriesSettings();
+    susc->xs = &xall;
+    susc->ys = &y1;
+    susc->linearInterpolation = true;
+    susc->lineThickness = 2;
+    susc->color = CreateRGBColor(1.0, 0.0, 0.0);
+
+    ScatterPlotSeries *expo = GetDefaultScatterPlotSeriesSettings();
+    susc->xs = &xall;
+    susc->ys = &y2;
+    susc->linearInterpolation = true;
+    susc->lineThickness = 2;
+    susc->color = CreateRGBColor(0.5, 0.5, 0.0);
+
+    ScatterPlotSeries *infe = GetDefaultScatterPlotSeriesSettings();
+    susc->xs = &xall;
+    susc->ys = &y3;
+    susc->linearInterpolation = true;
+    susc->lineThickness = 2;
+    susc->color = CreateRGBColor(0.0, 1.0, 0.0);
+
+    ScatterPlotSeries *reco = GetDefaultScatterPlotSeriesSettings();
+    susc->xs = &xall;
+    susc->ys = &y4;
+    susc->linearInterpolation = true;
+    susc->lineThickness = 2;
+    susc->color = CreateRGBColor(0.0, 0.75, 0.25);
+
+    ScatterPlotSeries *vacc = GetDefaultScatterPlotSeriesSettings();
+    susc->xs = &xall;
+    susc->ys = &y5;
+    susc->linearInterpolation = true;
+    susc->lineThickness = 2;
+    susc->color = CreateRGBColor(0.0, 0.25, 0.75);
+
+    ScatterPlotSeries *immu = GetDefaultScatterPlotSeriesSettings();
+    susc->xs = &xall;
+    susc->ys = &y6;
+    susc->linearInterpolation = true;
+    susc->lineThickness = 2;
+    susc->color = CreateRGBColor(0.0, 0.0, 1.0);
+
+    ScatterPlotSettings *settings = GetDefaultScatterPlotSettings();
+    settings->width = 600;
+    settings->height = 400;
+    settings->autoBoundaries = true;
+    settings->autoPadding = true;
+    settings->title = toVector(L"");
+    settings->xLabel = toVector(L"Iterations");
+    settings->yLabel = toVector(L"Probability");
+
+    vector<ScatterPlotSeries*> GraphVec;
+
+    RGBABitmapImageReference *imageReference = CreateRGBABitmapImageReference();
+    bool success;
+    StringReference *stringref = CreateStringReferenceLengthValue(0, L' ');
+
     while(exitcon != 0)
     {
 
@@ -321,9 +398,11 @@ int main(){
                 cout << "How many iterations do you want to calculate?" << endl;
                 cin >> iterations;
 
+
                 for(int i = 0; i < iterations; i++)
                 {
-                    IterateStepSEIR(reftransmatrix, RefVec);
+                    IterateStepSEIR(reftransmatrix, RefVec, i, xall, y1, y2, y3, y4, y5, y6);
+
                 }
 
                 cout << "Your vector is " << endl;
@@ -347,7 +426,7 @@ int main(){
 
                 for(int i = 0; i < iterations; i++)
                 {
-                    IterateStepSEIRIm(reftransmatrix, RefVec);
+                    IterateStepSEIRIm(reftransmatrix, RefVec, i, xall, y1, y2, y3, y4, y5, y6);
                 }
 
                 for(int i = 0; i < 6; i++)
@@ -366,7 +445,7 @@ int main(){
 
                 for(int i = 0; i < iterations; i++)
                 {
-                    IterateStepSEIRVIm(reftransmatrix, RefVec);
+                    IterateStepSEIRVIm(reftransmatrix, RefVec, i, xall, y1, y2, y3, y4, y5, y6);
                 }
 
                 for(int i = 0; i < 6; i++)
