@@ -71,7 +71,7 @@ void InitTransMatrix(Matrix<double, 6, 6> (&arr), double Ps, double Pe, double P
 
 void IterateStepSEIR(Matrix<double, 6, 6> (&arr1), double (&arr2)[6], int iter, vector<double> (&x), vector<double> (&y1), vector<double> (&y2), vector<double> (&y3), vector<double> (&y4), vector<double> (&y5), vector<double> (&y6))
 {
-    if(iter == 1)
+    if(iter == 0)
     {
     x[0] = 0;
     y1[0] = arr2[0];
@@ -107,13 +107,13 @@ void IterateStepSEIR(Matrix<double, 6, 6> (&arr1), double (&arr2)[6], int iter, 
     arr2[4] = 0; 
     arr2[5] = 0;
 
-    x[iter] = iter;
-    y1[iter] = arr2[0];
-    y2[iter] = arr2[1];
-    y3[iter] = arr2[2];
-    y4[iter] = arr2[3];
-    y5[iter] = arr2[4];
-    y6[iter] = arr2[5];
+    x[iter + 1] = iter + 1;
+    y1[iter + 1] = arr2[0];
+    y2[iter + 1] = arr2[1];
+    y3[iter + 1] = arr2[2];
+    y4[iter + 1] = arr2[3];
+    y5[iter + 1] = arr2[4];
+    y6[iter + 1] = arr2[5];
 }
 
 void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6], int iter, vector<double> (&x), vector<double> (&y1), vector<double> (&y2), vector<double> (&y3), vector<double> (&y4), vector<double> (&y5), vector<double> (&y6))
@@ -158,13 +158,13 @@ void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6], int ite
         }
     }
 
-    x[iter] = iter;
-    y1[iter] = arr2[0];
-    y2[iter] = arr2[1];
-    y3[iter] = arr2[2];
-    y4[iter] = arr2[3];
-    y5[iter] = arr2[4];
-    y6[iter] = arr2[5];
+    x[iter + 1] = iter + 1;
+    y1[iter + 1] = arr2[0];
+    y2[iter + 1] = arr2[1];
+    y3[iter + 1] = arr2[2];
+    y4[iter + 1] = arr2[3];
+    y5[iter + 1] = arr2[4];
+    y6[iter + 1] = arr2[5];
 }
 
 void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6], int iter, vector<double> (&x), vector<double> (&y1), vector<double> (&y2), vector<double> (&y3), vector<double> (&y4), vector<double> (&y5), vector<double> (&y6))
@@ -203,13 +203,13 @@ void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6], int it
         }
     }
 
-    x[iter] = iter;
-    y1[iter] = arr2[0];
-    y2[iter] = arr2[1];
-    y3[iter] = arr2[2];
-    y4[iter] = arr2[3];
-    y5[iter] = arr2[4];
-    y6[iter] = arr2[5];
+    x[iter + 1] = iter + 1;
+    y1[iter + 1] = arr2[0];
+    y2[iter + 1] = arr2[1];
+    y3[iter + 1] = arr2[2];
+    y4[iter + 1] = arr2[3];
+    y5[iter + 1] = arr2[4];
+    y6[iter + 1] = arr2[5];
 }
 
 void InitRef(Matrix <double, 6, 6> (&arr1), Matrix <double, 6, 6> (&arr3))
