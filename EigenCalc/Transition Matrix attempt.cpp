@@ -118,7 +118,7 @@ void IterateStepSEIR(Matrix<double, 6, 6> (&arr1), double (&arr2)[6], int iter, 
 
 void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6], int iter, vector<double> (&x), vector<double> (&y1), vector<double> (&y2), vector<double> (&y3), vector<double> (&y4), vector<double> (&y5), vector<double> (&y6))
 {
-    if(iter == 1)
+    if(iter == 0)
     {
     x[0] = 0;
     y1[0] = arr2[0];
@@ -170,7 +170,7 @@ void IterateStepSEIRIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6], int ite
 void IterateStepSEIRVIm(Matrix <double, 6, 6> (&arr1), double (&arr2)[6], int iter, vector<double> (&x), vector<double> (&y1), vector<double> (&y2), vector<double> (&y3), vector<double> (&y4), vector<double> (&y5), vector<double> (&y6))
 {
 
-    if(iter == 1)
+    if(iter == 0)
     {
     x[0] = 0;
     y1[0] = arr2[0];
@@ -237,7 +237,6 @@ void InitRef_matSEIR(Matrix <double, 6, 6> (&arr1), MatrixXd (&ref_mat))
 
 void InitRef_matSEIRIm(Matrix <double, 6, 6> (&arr1), MatrixXd (&ref_mat))
 {
-    ref_mat = arr1;
     ref_mat.resize(5, 5);
     int remove4[5] = {0, 1, 2, 3, 5};
 
@@ -245,7 +244,7 @@ void InitRef_matSEIRIm(Matrix <double, 6, 6> (&arr1), MatrixXd (&ref_mat))
     {
         for(int j = 0; j < 5; j++)
         {
-            arr1(i, j) = ref_mat(remove4[i], remove4[j]);
+            ref_mat(i, j) = arr1(remove4[i], remove4[j]);
         }
     }
 }
@@ -319,35 +318,35 @@ int main(){
     expo->xs = &xall; expo->ys = &y2;
     //expo->linearInterpolation = true; expo->lineThickness = 2;
     expo->linearInterpolation = false;
-    expo->color = CreateRGBColor(0.5, 0.5, 0.0);
+    expo->color = CreateRGBColor(1.0, 0.647, 0.0);
     expo->pointType = toVector(L"dots");
 
     ScatterPlotSeries *infe = GetDefaultScatterPlotSeriesSettings();
     infe->xs = &xall; infe->ys = &y3;
     //infe->linearInterpolation = true; infe->lineThickness = 2;
     infe->linearInterpolation = false;
-    infe->color = CreateRGBColor(0.0, 1.0, 0.0);
+    infe->color = CreateRGBColor(1.0, 1.0, 0.0);
     infe->pointType = toVector(L"dots");
 
     ScatterPlotSeries *reco = GetDefaultScatterPlotSeriesSettings();
     reco->xs = &xall; reco->ys = &y4;
     //reco->linearInterpolation = true; reco->lineThickness = 2;
     reco->linearInterpolation = false;
-    reco->color = CreateRGBColor(0.0, 0.75, 0.25);
+    reco->color = CreateRGBColor(0.0, 1.0, 0.0);
     reco->pointType = toVector(L"dots");
 
     ScatterPlotSeries *vacc = GetDefaultScatterPlotSeriesSettings();
     vacc->xs = &xall; vacc->ys = &y5;
     //vacc->linearInterpolation = true; vacc->lineThickness = 2;
     vacc->linearInterpolation = false;
-    vacc->color = CreateRGBColor(0.0, 0.25, 0.75);
+    vacc->color = CreateRGBColor(0.0, 1.0, 1.0);
     vacc->pointType = toVector(L"dots");
 
     ScatterPlotSeries *immu = GetDefaultScatterPlotSeriesSettings();
     immu->xs = &xall; immu->ys = &y6;
     //immu->linearInterpolation = true; immu->lineThickness = 2;
     immu->linearInterpolation = false;
-    immu->color = CreateRGBColor(0.0, 0.0, 1.0);
+    immu->color = CreateRGBColor(0.498, 0.0, 1.0);
     immu->pointType = toVector(L"dots");
 
     ScatterPlotSettings *settings = GetDefaultScatterPlotSettings();
