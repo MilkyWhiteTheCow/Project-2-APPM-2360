@@ -10,6 +10,7 @@ using namespace std;
 
 // -----------------
 #include <typeinfo>
+#include <cstdint>
 
 enum Type { type_boolean, type_character, type_number, type_reference };
 
